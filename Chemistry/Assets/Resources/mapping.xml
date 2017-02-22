@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Mapping>
+  <Items>
+    <Item>
+      <Target>stones</Target>
+      <Entity>
+        <ModelID>BlueCube</ModelID>
+      </Entity>
+    </Item>
+    <Item>
+      <Target>chips</Target>
+      <Entity>
+        <ModelID>md005</ModelID>
+      </Entity>
+    </Item>
+  </Items>
+</Mapping>
