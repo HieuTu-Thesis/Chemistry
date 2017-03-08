@@ -7,9 +7,7 @@ using Vuforia;
 public class EntityInstantiator : MonoBehaviour, ITrackableEventHandler
 {
     private TrackableBehaviour mTrackableBehaviour;
-  //  public GameObject myModelPrefab;
-    private GameObject model;
-
+    public List<GameObject> realModels = new List<GameObject>();
     // Use this for initialization
     void Start () {
         mTrackableBehaviour = GetComponent<TrackableBehaviour>();
@@ -32,25 +30,33 @@ public class EntityInstantiator : MonoBehaviour, ITrackableEventHandler
             OnTrackingLost();
         }
     }
-    private void OnTrackingFound()
-    {
-        Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " found");
-        List<string> models = ItemLoader.getEntity(mTrackableBehaviour.TrackableName);
 
-        foreach (string modelName in models)
+    public void OnTrackingFound()
+    {
+        Debug.Log("Trackable...... " + mTrackableBehaviour.TrackableName + " found");
+        MyEntity entity = ItemManager.getEntity(mTrackableBehaviour.TrackableName);
+        if (entity == null)
+            return;
+        MyDisplay display = entity.getDisplay();
+        if (display == null)
+            return;
+        foreach (Model model in display.models)
         {
-            GameObject myModelPrefab = Instantiate(Resources.Load(modelName)) as GameObject;
-            if (myModelPrefab != null)
+            if (model != null)
             {
-                model = Instantiate(myModelPrefab, Vector3.zero, Quaternion.identity) as GameObject;
-                model.transform.parent = mTrackableBehaviour.transform;
-                model.transform.position = mTrackableBehaviour.transform.position;
-                model.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-                model.SetActive(true);
+                GameObject realModel = Instantiate(Resources.Load(model.name)) as GameObject;
+                realModel.transform.parent = mTrackableBehaviour.transform;
+                realModel.transform.position = mTrackableBehaviour.transform.position + model.getTransform().GetPosition();
+                realModel.transform.localScale = model.getTransform().GetScale();
+                realModel.transform.eulerAngles = model.getTransform().GetRotation();
+                realModel.SetActive(true);
+                realModels.Add(realModel);
             }
         }
+        Debug.Log("Entity add log..." + mTrackableBehaviour.TrackableName);
     }
-    private void OnTrackingLost()
+
+    public void OnTrackingLost()
     {
         Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
         Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
@@ -66,9 +72,20 @@ public class EntityInstantiator : MonoBehaviour, ITrackableEventHandler
         {
             component.enabled = false;
         }
-
-        GameObject.Destroy(model);
+        Debug.Log("Lost xoa ne " + mTrackableBehaviour.TrackableName);
+        deleteModels(mTrackableBehaviour.TrackableName);
 
         Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
+    }
+
+
+    public void deleteModels(string target)
+    {
+        foreach (GameObject model in realModels)
+        {
+            string xname = model.name;
+            GameObject.DestroyObject(model);
+        }
+        realModels.Clear();
     }
 }

@@ -7,8 +7,8 @@ using System.IO;
 [XmlRoot("Mapping")]
 public class ItemContainer {
 
-    [XmlArray("Items")]
-    [XmlArrayItem("Item")]
+    [XmlArray("Items")] 
+    [XmlArrayItem("Item", typeof(Item))]
     public List<Item> items = new List<Item>();
 
     public static ItemContainer Load(string path)

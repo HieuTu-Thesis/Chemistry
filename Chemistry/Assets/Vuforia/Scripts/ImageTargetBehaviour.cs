@@ -15,5 +15,9 @@ namespace Vuforia
     /// </summary>
     public class ImageTargetBehaviour : ImageTargetAbstractBehaviour
     {
+        void Start()
+        {
+           // this->CreateVirtualButton()
+        }
     }
 }
